@@ -1,15 +1,12 @@
 FROM node:20-alpine
-
+RUN apk add --no-cache openssl
 WORKDIR /app
-
-COPY package*.json ./
+COPY services/customer-service/package*.json ./
 RUN npm ci --only=production
-
-# Copy schema và generate Prisma Client
-COPY prisma ./prisma/
+COPY shared /shared
+COPY shared ./shared
+COPY services/customer-service/prisma ./prisma/
 RUN npx prisma generate
-
-COPY . .
-
+COPY services/customer-service/ .
 EXPOSE 3002 50051
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate && npm start"]
