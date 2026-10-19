@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:3003/api/products
+
+### 1. Healthcheck Product Service
+GET http://localhost:3003/health
+
+###
+
+### 2. Tạo sản phẩm mới
+# @name createProductRequest
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "name": "Laptop Gaming Alienware m15",
+  "price": 2500,
+  "stock": 50,
+  "description": "High performance gaming laptop"
+}
+
+###
+
+### Biến tự động lấy productId từ response tạo sản phẩm mới
+@productId = {{createProductRequest.response.body.data._id}}
+
+### 3. Lấy danh sách tất cả sản phẩm
+GET {{baseUrl}}
+
+###
+
+### 4. Xem chi tiết sản phẩm theo ID
+GET {{baseUrl}}/{{productId}}
+
+###
+
+### 5. Kiểm tra tồn kho (quantity = 5)
+GET {{baseUrl}}/{{productId}}/stock?quantity=5
+
+###
+
+### 6. Cập nhật tồn kho (Giảm 2 sản phẩm)
+PUT {{baseUrl}}/{{productId}}/stock
+Content-Type: application/json
+
+{
+  "stockDelta": -2
+}

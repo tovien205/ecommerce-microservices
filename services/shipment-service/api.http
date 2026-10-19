@@ -1,0 +1,37 @@
+@baseUrl = http://localhost:3005/api/shipments
+
+### 1. Healthcheck Shipment Service
+GET http://localhost:3005/health
+
+###
+
+### 2. Xem danh sách tất cả vận đơn
+GET {{baseUrl}}
+
+###
+
+### Biến dùng để lấy ID vận đơn vừa tạo
+@orderId = c1051471-b46e-4bec-b36d-0740c5d4c202
+
+### 3. Tra cứu vận đơn theo ID
+GET {{baseUrl}}/{{orderId}}
+
+###
+
+### 4. Cập nhật trạng thái vận đơn sang SHIPPING
+PUT {{baseUrl}}/{{orderId}}/status
+Content-Type: application/json
+
+{
+  "status": "SHIPPING"
+}
+
+###
+
+### 5. Cập nhật trạng thái vận đơn sang DELIVERED
+PUT {{baseUrl}}/{{orderId}}/status
+Content-Type: application/json
+
+{
+  "status": "DELIVERED"
+}

@@ -1,0 +1,37 @@
+@baseUrl = http://localhost:3001/api/auth
+
+### 1. Kiểm tra sức khỏe Auth Service
+GET http://localhost:3001/health
+
+###
+
+### 2. Test 1: Đăng ký tài khoản
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "user01",
+  "password": "example_password",
+  "fullname": "Nguyen Van A"
+}
+
+###
+
+### 3. Test 2: Đăng nhập (Tự động lưu Token)
+# @name loginRequest
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "user01",
+  "password": "example_password"
+}
+
+###
+
+### Biến tự động lấy Token từ response đăng nhập trên
+@authToken = {{loginRequest.response.body.token}}
+
+### 4. Test 3: Lấy thông tin Profile (Yêu cầu JWT Token)
+GET {{baseUrl}}/me
+Authorization: Bearer {{authToken}}

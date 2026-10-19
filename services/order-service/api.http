@@ -1,0 +1,29 @@
+@baseUrl = http://localhost:3004/api/orders
+
+### 1. Healthcheck Order Service
+GET http://localhost:3004/health
+
+###
+
+### 2. Tạo đơn hàng mới (Sử dụng Customer ID & Product ID từ Bước 12 và 13)
+# @name createOrderRequest
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "customerId": "02edd792-96ff-4e17-ad6e-ecea62dc0f3c",
+  "items": [
+    {
+      "productId": "6ad5eb758a4076250bff343e",
+      "quantity": 2
+    }
+  ]
+}
+
+###
+
+### Biến dùng để lấy ID đơn hàng vừa tạo
+@orderId = {{createOrderRequest.response.body.data.id}}
+
+### 3. Xem thông tin đơn hàng theo ID
+GET {{baseUrl}}/{{orderId}}

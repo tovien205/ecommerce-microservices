@@ -1,0 +1,26 @@
+@baseUrl = http://localhost:3002/api/customers
+
+### 1. Healthcheck Customer Service
+GET http://localhost:3002/health
+
+###
+
+### 2. Tao Customer moi
+# @name createCustomerRequest
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "userId": "c0cf38a0-f353-4db4-896c-ed16b48e92ef",
+  "fullName": "Nguyen Van A",
+  "email": "nguyenvana@example.com",
+  "phone": "0901234567"
+}
+
+###
+
+### Biến tự động lấy customerId từ response tạo Customer mới
+@customerId = {{createCustomerRequest.response.body.data.id}}
+
+### 3. Lay thong tin Customer theo ID
+GET {{baseUrl}}/{{customerId}}

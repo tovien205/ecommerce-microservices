@@ -1,0 +1,48 @@
+@gatewayUrl = http://localhost:3000
+
+### 1. Healthcheck API Gateway
+GET {{gatewayUrl}}/health
+
+###
+
+### 2. Xem sản phẩm qua Gateway (Public Route)
+GET {{gatewayUrl}}/api/products
+
+###
+
+### 3a. Đăng ký tài khoản mới qua Gateway
+POST {{gatewayUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "sang",
+  "password": "password123",
+  "fullname": "Trần Văn Sang",
+  "fullName": "Trần Văn Sang",
+  "email": "sang@example.com",
+  "role": "ADMIN"
+}
+
+###
+
+### 3b. Đăng nhập Auth Service qua Gateway để lấy Token
+# @name loginRequest
+POST {{gatewayUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "sang",
+  "password": "password123"
+}
+
+###
+
+### 4. Xem chi tiết Đơn hàng theo ID qua Gateway
+GET {{gatewayUrl}}/api/orders/c1051471-b46e-4bec-b36d-0740c5d4c202
+Authorization: Bearer {{loginRequest.response.body.token}}
+
+### 5. Xem thông tin Vận đơn qua Gateway (Cần Token)
+GET {{gatewayUrl}}/api/shipments
+Authorization: Bearer {{loginRequest.response.body.token}}
+
+

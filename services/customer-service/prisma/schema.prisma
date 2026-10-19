@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id             String   @id @default(uuid())
+  userId         String   @unique @map("user_id") // ID tham chiếu từ Auth Service
+  fullName       String   @map("full_name")
+  email          String   @unique
+  phone          String?
+  membershipTier String   @default("SILVER") @map("membership_tier") // SILVER, GOLD, PLATINUM
+  score          Int      @default(0)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("customers")
+}
