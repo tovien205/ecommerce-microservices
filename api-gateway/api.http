@@ -130,3 +130,30 @@ Authorization: Bearer {{token}}
 ### 5. Tra cứu Vận đơn tự động sinh ra (Shipment Service)
 GET http://localhost:3000/api/shipments/order/e3f51475-0087-47e9-99b9-7ed6f27cbe2c
 Authorization: Bearer {{token}}
+
+
+### Mục 4. TC-PRO-01: Lấy danh sách sản phẩm (Product Service)
+GET http://localhost:3000/api/products
+
+### Mục 5. TC-CUS-04: Lấy thông tin Membership (Customer Service)
+GET http://localhost:3000/api/customers/3acf3518-0447-4ea0-be00-89f87c152d03
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzYWNmMzUxOC0wNDQ3LTRlYTAtYmUwMC04OWY4N2MxNTJkMDMiLCJ1c2VybmFtZSI6InRlc3R1c2VyMjAzMCIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzkyNTA0NjczLCJleHAiOjE3OTI1OTEwNzN9.fDCatIg3RjJmbrA62Hwu87B6FQNdkALatm6M761glqU
+
+### Mục 6. TC-CUS-05: Truy vấn Customer không có token (Kỳ vọng 401)
+GET http://localhost:3000/api/customers/3acf3518-0447-4ea0-be00-89f87c152d03
+
+### 7. TC-ORD-04: Tạo đơn hàng tính discount
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzYWNmMzUxOC0wNDQ3LTRlYTAtYmUwMC04OWY4N2MxNTJkMDMiLCJ1c2VybmFtZSI6InRlc3R1c2VyMjAzMCIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzkyNTA0NjczLCJleHAiOjE3OTI1OTEwNzN9.fDCatIg3RjJmbrA62Hwu87B6FQNdkALatm6M761glqU
+
+{
+  "customerId": "3acf3518-0447-4ea0-be00-89f87c152d03",
+  "items": [
+    {
+      "productId": "6ad704de682d748526eb615f",
+      "quantity": 2,
+      "price": 25000000
+    }
+  ]
+}

@@ -41,4 +41,17 @@ const getCustomer = async (req, res) => {
   }
 };
 
-module.exports = { createCustomer, getCustomer };
+const getCustomers = async (req, res) => {
+  try {
+    const customers = await prisma.customer.findMany();
+    return res.status(200).json({ data: customers });
+  } catch (error) {
+    return res.status(500).json({ message: 'Lỗi server', error: error.message });
+  }
+};
+
+module.exports = {
+  createCustomer,
+  getCustomer,
+  getCustomers
+};

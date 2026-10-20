@@ -45,7 +45,7 @@ const createOrder = async (req, res) => {
       });
     }
 
-    // 4. Tính to�n Discount d?a  Score kh�ch h�ng (M?i 100 score gi?m 1%, t?i da 20%)
+    // 4. Tính toán Discount dựa trên Score khách hàng (Mỗi 100 score giảm 1%, tối đa 20%)
     const discountRate = Math.min((customerScore / 100) * 0.01, 0.20);
     const discountAmount = rawTotalAmount * discountRate;
     const finalAmount = rawTotalAmount - discountAmount;
