@@ -1,28 +1,25 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const prisma = require('../../infrastructure/prisma');
+const { createCustomer } = require('../grpc/customer.client');
 
 // 1. Đăng ký tài khoản
 const register = async (req, res) => {
   try {
-    const { username, password, fullname } = req.body;
+    const { username, password, fullname, email } = req.body;
 
-    // Validate dữ liệu đầu vào
     if (!username || !password || !fullname) {
       return res.status(400).json({ message: 'username, password và fullname là bắt buộc' });
     }
 
-    // Kiểm tra username trùng
     const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) {
       return res.status(409).json({ message: 'Tên đăng nhập đã tồn tại' });
     }
 
-    // Hash mật khẩu
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Lưu User vào database
     const newUser = await prisma.user.create({
       data: {
         username,
@@ -38,13 +35,25 @@ const register = async (req, res) => {
       },
     });
 
-    return res.status(201).json({
+    // Trả về response 201 cho Client ngay lập tức
+    res.status(201).json({
       message: 'Đăng ký tài khoản thành công',
       data: newUser,
     });
+
+    // Tạo Customer ngầm ở background
+    createCustomer({
+      id: newUser.id,
+      userId: newUser.id,
+      fullName: fullname,
+      email: email || `${username}@example.com`,
+    }).catch(() => {});
+
   } catch (error) {
     console.error('Register error:', error);
-    return res.status(500).json({ message: 'Lỗi máy chủ nội bộ', error: error.message });
+    if (!res.headersSent) {
+      return res.status(500).json({ message: 'Lỗi máy chủ nội bộ', error: error.message });
+    }
   }
 };
 
@@ -57,7 +66,6 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Vui lòng nhập username và password' });
     }
 
-    // Tìm User
     const user = await prisma.user.findUnique({
       where: { username },
       include: { role: true },
@@ -67,13 +75,11 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Tài khoản hoặc mật khẩu không chính xác' });
     }
 
-    // So sánh mật khẩu với hash
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Tài khoản hoặc mật khẩu không chính xác' });
     }
 
-    // Tạo JWT
     const tokenPayload = {
       userId: user.id,
       username: user.username,
@@ -86,7 +92,6 @@ const login = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '1d' }
     );
 
-    // Trả response
     return res.status(200).json({
       message: 'Đăng nhập thành công',
       token,

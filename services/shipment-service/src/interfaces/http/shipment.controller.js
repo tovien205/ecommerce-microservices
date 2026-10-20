@@ -1,21 +1,21 @@
 const { ObjectId } = require('mongodb');
 const { getDB } = require('../../infrastructure/db');
 
-// 8. Viết API tra cứu Shipment theo ID hoặc OrderID
+// 1. Lấy tất cả Vận đơn
 const getShipments = async (req, res) => {
   try {
     const db = getDB();
     const shipments = await db.collection('shipments').find({}).toArray();
     return res.status(200).json({ data: shipments });
   } catch (error) {
-    return res.status(500).json({ message: 'L?i server', error: error.message });
+    return res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
 };
 
-// 8. Viết API tra cứu Shipment theo ID hoặc OrderID
+// 2. Tra cứu Vận đơn theo ID hoặc OrderID
 const getShipmentById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id || req.params.orderId;
     const db = getDB();
 
     let query = {};
@@ -36,7 +36,7 @@ const getShipmentById = async (req, res) => {
   }
 };
 
-// 9. Viết API cập nhật trạng thái giao hàng
+// 3. Cập nhật trạng thái giao hàng
 const updateShipmentStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -80,4 +80,9 @@ const updateShipmentStatus = async (req, res) => {
   }
 };
 
-module.exports = { getShipments, getShipmentById, updateShipmentStatus };
+module.exports = {
+  getShipments,
+  getShipmentById,
+  getShipmentByOrderId: getShipmentById, // Alias để khớp với route /order/:orderId
+  updateShipmentStatus,
+};

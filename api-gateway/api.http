@@ -18,7 +18,6 @@ Content-Type: application/json
   "username": "sang",
   "password": "password123",
   "fullname": "Trần Văn Sang",
-  "fullName": "Trần Văn Sang",
   "email": "sang@example.com",
   "role": "ADMIN"
 }
@@ -46,3 +45,88 @@ GET {{gatewayUrl}}/api/shipments
 Authorization: Bearer {{loginRequest.response.body.token}}
 
 
+### Health Check API Gateway
+GET http://localhost:3000/health
+
+### Health Check Auth Service (via Gateway Proxy)
+GET http://localhost:3000/api/auth/health
+
+### Health Check Customer Service (via Gateway Proxy)
+GET http://localhost:3000/api/customers/health
+
+### Health Check Product Service (via Gateway Proxy)
+GET http://localhost:3000/api/products/health
+
+### Health Check Order Service (via Gateway Proxy)
+GET http://localhost:3000/api/orders/health
+
+### Health Check Shipment Service (via Gateway Proxy)
+GET http://localhost:3000/api/shipments/health 
+
+
+### ==========================================
+### BƯỚC 21: LUỒNG KIỂM THỬ CHÍNH (HAPPY PATH)
+### ==========================================
+
+### 1. Đăng ký tài khoản (Register)
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser2030",
+  "email": "testuser2030@gmail.com",
+  "password": "Password123!",
+  "fullname": "Trần Văn Sang",
+  "role": "ADMIN"
+}
+
+### 2. Đăng nhập lấy JWT Token (Login)
+# @name login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser2030",
+  "password": "Password123!"
+}
+### 2b. Lấy thông tin Khách hàng (Đã tự động tạo khi Register)
+# @name getCustomer
+GET http://localhost:3000/api/customers
+Authorization: Bearer {{token}}
+### Biến lưu tự động Token từ response login
+@token = {{login.response.body.token}}
+
+### 3. Tạo sản phẩm mới (Product Service)
+# @name createProduct
+POST http://localhost:3000/api/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Laptop Alienware m15",
+  "sku": "ALIENWARE-M15-2026",
+  "price": 25000000,
+  "stock": 10
+}
+
+
+### 4. Tạo đơn hàng (Order Service -> Kafka Event)
+# @name createOrder
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "customerId": "3acf3518-0447-4ea0-be00-89f87c152d03",
+  "items": [
+    {
+      "productId": "6ad704de682d748526eb615f",
+      "quantity": 2,
+      "price": 25000000
+    }
+  ]
+}
+
+### 5. Tra cứu Vận đơn tự động sinh ra (Shipment Service)
+GET http://localhost:3000/api/shipments/order/e3f51475-0087-47e9-99b9-7ed6f27cbe2c
+Authorization: Bearer {{token}}

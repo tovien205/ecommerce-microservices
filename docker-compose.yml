@@ -101,8 +101,8 @@ services:
   # ---------------------------------------------------------------------------
   auth-service:
     build:
-      context: ./services/auth-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/auth-service/Dockerfile
     container_name: auth-service
     restart: always
     depends_on:
@@ -114,6 +114,7 @@ services:
       AUTH_DATABASE_URL: "postgresql://app_user:change_me@postgres:5432/auth_db"
       JWT_SECRET: "super_secret_jwt_key_ecommerce_2026"
       JWT_EXPIRES_IN: "1d"
+      CUSTOMER_GRPC_HOST: "customer-service:50051"
     networks:
       - ecommerce-network
 

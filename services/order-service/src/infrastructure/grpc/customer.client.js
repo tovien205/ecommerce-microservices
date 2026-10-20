@@ -13,7 +13,13 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 });
 
 const customerProto = grpc.loadPackageDefinition(packageDefinition).customer;
-const host = process.env.CUSTOMER_GRPC_HOST || 'localhost:50051';
+
+// Đọc biến môi trường, nếu chứa 'localhost' hoặc '127.0.0.1' hoặc '::1' thì tự động đổi thành 'customer-service:50051'
+let host = process.env.CUSTOMER_GRPC_HOST || process.env.CUSTOMER_SERVICE_GRPC_URL || 'customer-service:50051';
+if (host.includes('localhost') || host.includes('127.0.0.1') || host.includes('::1')) {
+  host = 'customer-service:50051';
+}
+
 const client = new customerProto.CustomerService(host, grpc.credentials.createInsecure());
 
 const getCustomer = (customerId) => {
